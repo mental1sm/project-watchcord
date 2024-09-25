@@ -4,34 +4,55 @@ import { UpdateChannelDto } from './dto/update-channel.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Channel } from './entities/channel.entity';
 import { Repository } from 'typeorm';
+import { DiscordClientService } from '../discord_client/discord.client.service';
+import { BotService } from '../bot/bot.service';
+import { GuildService } from '../guild/guild.service';
+import { Guild } from '../guild/entities/guild.entity';
+import { CreateGuildDto } from '../guild/dto/create-guild.dto';
 
 @Injectable()
 export class ChannelService {
-  constructor(@InjectRepository(Channel) private readonly channelRepository: Repository<Channel>) {}
+  constructor(
+    @InjectRepository(Channel) private readonly channelRepository: Repository<Channel>,
+    private readonly discordClient: DiscordClientService,
+    private readonly guildService: GuildService,
+    private readonly botService: BotService
+  ) {}
 
-  create(createChannelDto: CreateChannelDto): Promise<CreateChannelDto> {
-    const channel = this.channelRepository.create(createChannelDto);
-    return this.channelRepository.save(channel);
+  async fetchAll(guildId: string): Promise<Channel[]> {
+    let guild = await this.guildService.findOne(guildId);
+    if (!guild) {
+      guild = await this.guildService.fetch(guildId);
+    }
+    let channels = (await this.discordClient.fetchChannels(guildId)).data;
+    await Promise.allSettled(
+      channels.map(channel => {
+        channel.guild = guild;
+        return this.channelRepository.save(channel)
+      }
+      ));
+
+    return this.findAll(guildId);
   }
 
-  findAll(guildId: number): Promise<Channel[]> {
+  findAll(guildId: string): Promise<Channel[]> {
     return this.channelRepository.find({
-      where: {guild: {
-          guildId: guildId,
+      where: { guild: {
+        id: guildId,
         }},
     });
   }
 
-  findOne(channelId: number) {
-    return this.channelRepository.findOne({where: {channelId: channelId}});
+  findOne(id: string) {
+    return this.channelRepository.findOne({where: {id: id}});
   }
 
-  update(channelId: number, updateChannelDto: UpdateChannelDto) {
-    return this.channelRepository.update(channelId, updateChannelDto);
+  update(id: string, updateChannelDto: UpdateChannelDto) {
+    return this.channelRepository.update(id, updateChannelDto);
   }
 
-  async remove(channelId: number) {
-    const channel = await this.channelRepository.findOne({where: {channelId: channelId}});
+  async remove(id: string) {
+    const channel = await this.channelRepository.findOne({where: {id: id}});
     return this.channelRepository.remove(channel);
   }
 }

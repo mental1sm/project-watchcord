@@ -5,9 +5,9 @@ import {ConfigModule} from "@nestjs/config";
 import {TypeOrmModule} from "@nestjs/typeorm";
 import { BotModule } from './bot/bot.module';
 import * as process from "node:process";
-import { BotController } from './bot/bot.controller';
 import { GuildModule } from './guild/guild.module';
 import { ChannelModule } from './channel/channel.module';
+import { MemberModule } from './member/member.module';
 
 
 @Module({
@@ -22,6 +22,7 @@ import { ChannelModule } from './channel/channel.module';
       BotModule,
       GuildModule,
       ChannelModule,
+      MemberModule,
   ],
   controllers: [AppController],
   providers: [AppService],

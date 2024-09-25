@@ -1,5 +1,5 @@
-import { OmitType, PartialType } from '@nestjs/mapped-types';
+import {OmitType} from '@nestjs/swagger';
 import { CreateBotDto } from './create-bot.dto';
 
-export class UpdateBotDto extends OmitType(CreateBotDto, ['appId'] as const) {
+export class UpdateBotDto extends OmitType(CreateBotDto, ['id'] as const) {
 }
