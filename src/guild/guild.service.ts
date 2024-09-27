@@ -59,7 +59,7 @@ export class GuildService {
       }
     });
     await this.botService.save(bot);
-    return guilds;
+    return this.repository.find();
   }
 
 

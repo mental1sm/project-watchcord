@@ -1,6 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Member } from "src/member/entities/member.entity";
 import { Column, Entity, ManyToOne, PrimaryColumn } from "typeorm";
+import { User } from '../../user/entities/user.entity';
 
 @Entity()
 export class Message {
@@ -20,7 +21,7 @@ export class Message {
     @ApiProperty({name: 'Content of message', example: "Hi @everyone!", nullable: true})
     content: string;
 
-    @ManyToOne(() => Member, (member) => member.messages)
-    @ApiProperty({type: Member, description: 'Author of message'})
-    author: Member;
+    @ManyToOne(() => User, (user) => user.messages)
+    @ApiProperty({type: User, description: 'Author of message'})
+    author: User;
 }

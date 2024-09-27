@@ -1,8 +1,8 @@
-import { Controller, Get, Post, Param, UseInterceptors } from '@nestjs/common';
+import { Controller, Get, Param, Query, UseInterceptors } from '@nestjs/common';
 import { MemberService } from './member.service';
 import { ApiOkResponse, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
-import { Member } from './entities/member.entity';
 import { BotContextInterceptor } from '../bot/bot.interceptor';
+import { MemberDto } from './dto/member.dto';
 
 
 @ApiTags('Member')
@@ -14,24 +14,24 @@ export class MemberController {
   ) {}
 
   @Get()
-  @ApiOperation({summary: 'Fetch all Members from Database'})
-  @ApiOkResponse({description: "Found successfully", type: Member, isArray: false})
+  @ApiOperation({summary: 'Fetch all Members from Guild'})
+  @ApiOkResponse({description: "Found successfully", type: MemberDto, isArray: false})
   @ApiQuery({name: 'fetch', description: 'Fetch from Discord API'})
-  findAll(@Param('fetch') fetch: boolean, @Param('guildId') guildId: string) {
+  findAll(@Query('fetch') fetch: boolean, @Param('guildId') guildId: string) {
     if (fetch) {
       return this.memberService.fetchAll(guildId);
     }
     return this.memberService.findAll(guildId);
   }
 
-  @Get(':memberId')
-  @ApiOperation({summary: 'Fetch Member from Database'})
-  @ApiOkResponse({description: "Found successfully", type: Member, isArray: false})
+  @Get(':userId')
+  @ApiOperation({summary: 'Fetch Member'})
+  @ApiOkResponse({description: "Found successfully", type: MemberDto, isArray: false})
   @ApiQuery({name: 'fetch', description: 'Fetch from Discord API'})
-  find(@Param('memberId') memberId: string, @Param('guildId') guildId: string, @Param('fetch') fetch: boolean) {
+  find(@Param('userId') userId: string, @Param('guildId') guildId: string, @Query('fetch') fetch: boolean) {
     if (fetch) {
-      return this.memberService.fetch(guildId, memberId);
+      return this.memberService.fetch(guildId, userId);
     }
-    return this.memberService.findOne(guildId, memberId);
+    return this.memberService.findOne(guildId, userId);
   }
 }

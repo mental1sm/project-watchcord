@@ -7,12 +7,14 @@ import { DiscordClientService } from '../discord_client/discord.client.service';
 import { MessageFetchingOptions } from '../discord_client/types/message.fetching.options.type';
 import { Member } from '../member/entities/member.entity';
 import { MemberService } from '../member/member.service';
+import { User } from '../user/entities/user.entity';
+import { UserService } from '../user/user.service';
 
 @Injectable()
 export class MessageService {
   constructor(
     @InjectRepository(Message) private readonly repository: Repository<Message>,
-    private readonly memberService: MemberService,
+    private readonly userService: UserService,
     private readonly discordClient: DiscordClientService,
   ) {}
 
@@ -34,7 +36,7 @@ export class MessageService {
   async fetchAll(channelId: string, options: MessageFetchingOptions): Promise<Message[]> {
     const messages = (await this.discordClient.fetchMessages(channelId, options)).data;
 
-    const uniqueAuthors = new Map<string, Member>();
+    const uniqueAuthors = new Map<string, User>();
 
     messages.forEach(m => {
       if (!uniqueAuthors.has(m.author.id)) {
@@ -44,7 +46,7 @@ export class MessageService {
 
     const authors = Array.from(uniqueAuthors.values());
     if (authors.length > 0) {
-      await this.memberService.save(authors);
+      await this.userService.save(authors);
     }
 
     return this.repository.save(messages);

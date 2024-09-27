@@ -26,7 +26,6 @@ export class Guild {
   @OneToMany(() => Channel, (channel) => channel.guild)
   channels: Channel[];
 
-  @ManyToMany(() => Member, (member) => member.guilds)
-  @JoinTable()
+  @OneToMany(() => Member, (member) => member.guild)
   members: Member[];
 }

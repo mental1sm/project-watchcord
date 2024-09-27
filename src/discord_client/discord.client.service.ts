@@ -6,6 +6,7 @@ import { Guild } from '../guild/entities/guild.entity';
 import { Channel } from '../channel/entities/channel.entity';
 import { MessageFetchingOptions } from './types/message.fetching.options.type';
 import { Message } from '../message/entities/message.entity';
+import { Member } from '../member/entities/member.entity';
 
 @Injectable({scope: Scope.REQUEST})
 export class DiscordClientService {
@@ -84,7 +85,7 @@ export class DiscordClientService {
      * Fetch all members from specified Guild
      * @param guildId Guild id
      */
-    async fetchMembers(guildId: string): Promise<AxiosResponse<DiscordMemberType[]>> {
+    async fetchMembers(guildId: string): Promise<AxiosResponse<Member[]>> {
         return this.get(`/guilds/${guildId}/members`);
     }
 
@@ -93,7 +94,7 @@ export class DiscordClientService {
      * @param guildId Guild id
      * @param memberId Member id
      */
-    async fetchMember(guildId: string, memberId: string): Promise<AxiosResponse<DiscordMemberType>> {
+    async fetchMember(guildId: string, memberId: string): Promise<AxiosResponse<Member>> {
         return this.get(`/guilds/${guildId}/members/${memberId}`);
     }
 

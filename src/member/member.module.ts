@@ -6,12 +6,12 @@ import { Member } from './entities/member.entity';
 import { DiscordClientModule } from '../discord_client/discord.client.module';
 import { BotModule } from '../bot/bot.module';
 import { GuildModule } from '../guild/guild.module';
-import { MemberMapper } from './mappers/member.mapper.member';
+import { UserModule } from '../user/user.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Member]), DiscordClientModule, BotModule, GuildModule],
-  exports: [MemberService, MemberMapper],
+  imports: [TypeOrmModule.forFeature([Member]), DiscordClientModule, BotModule, GuildModule, UserModule],
+  exports: [MemberService],
   controllers: [MemberController],
-  providers: [MemberService, MemberMapper],
+  providers: [MemberService],
 })
 export class MemberModule {}

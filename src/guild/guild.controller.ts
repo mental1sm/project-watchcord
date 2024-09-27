@@ -1,6 +1,6 @@
-import { Controller, Get, Post, Param, UseInterceptors } from '@nestjs/common';
+import { Controller, Get, Post, Param, UseInterceptors, Query } from '@nestjs/common';
 import { GuildService } from './guild.service';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Guild } from './entities/guild.entity';
 import { DiscordClientService } from 'src/discord_client/discord.client.service';
 import { BotService } from 'src/bot/bot.service';
@@ -14,31 +14,25 @@ export class GuildController {
     private readonly guildService: GuildService
   ) {}
 
-  @Post()
-  @ApiOperation({summary: 'Fetch all Guilds from Discord API'})
-  @ApiResponse({status: 200, description: 'Fetched successfully', type: Guild, isArray: true})
-  async fetchAll() {
-    return this.guildService.fetchAll();
-  }
-
-  @Post(':guildId')
-  @ApiOperation({summary: 'Fetch Guild from Discord API'})
-  @ApiResponse({status: 200, description: 'Fetched successfully', type: Guild, isArray: false})
-  async fetch(@Param('guildId') guildId: string) {
-    return this.guildService.fetch(guildId);
-  }
-
   @Get()
-  @ApiOperation({summary: "Get all Guilds from Database"})
+  @ApiOperation({summary: "Fetch all Guilds"})
   @ApiResponse({status: 200, description: "Successfully found", type: Guild, isArray: true})
-  findAll(@Param('appId') appId: string) {
+  @ApiQuery({name: 'fetch', description: 'Fetch from Discord API'})
+  findAll(@Param('appId') appId: string, @Query('fetch') fetch: boolean) {
+    if (fetch) {
+      return this.guildService.findAll(appId);
+    }
     return this.guildService.findAll(appId);
   }
   
   @Get(':guildId')
-  @ApiOperation({summary: "Get specified Guild from Database"})
+  @ApiOperation({summary: "Fetch Guild"})
   @ApiResponse({status: 200, description: "Successfully found", type: Guild, isArray: false})
-  findOne(@Param('appId') appId: string, @Param('guildId') guildId: string) {
+  @ApiQuery({name: 'fetch', description: 'Fetch from Discord API'})
+  findOne(@Param('guildId') guildId: string, @Query('fetch') fetch: boolean) {
+    if (fetch) {
+      return this.guildService.fetch(guildId);
+    }
     return this.guildService.findOne(guildId);
   }
 }

@@ -6,9 +6,10 @@ import { Message } from './entities/message.entity';
 import { BotModule } from 'src/bot/bot.module';
 import { MemberModule } from 'src/member/member.module';
 import { DiscordClientModule } from '../discord_client/discord.client.module';
+import { UserModule } from '../user/user.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Message]), BotModule, MemberModule, DiscordClientModule],
+  imports: [TypeOrmModule.forFeature([Message]), BotModule, DiscordClientModule, UserModule],
   controllers: [MessageController],
   providers: [MessageService],
 })
