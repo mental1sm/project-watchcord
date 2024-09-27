@@ -8,6 +8,8 @@ import * as process from "node:process";
 import { GuildModule } from './guild/guild.module';
 import { ChannelModule } from './channel/channel.module';
 import { MemberModule } from './member/member.module';
+import { MessageModule } from './message/message.module';
+import { UserModule } from './user/user.module';
 
 
 @Module({
@@ -23,6 +25,8 @@ import { MemberModule } from './member/member.module';
       GuildModule,
       ChannelModule,
       MemberModule,
+      MessageModule,
+      UserModule,
   ],
   controllers: [AppController],
   providers: [AppService],

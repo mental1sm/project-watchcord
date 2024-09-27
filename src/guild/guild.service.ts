@@ -16,44 +16,92 @@ export class GuildService {
   ) {
   }
 
+  /**
+   * Create Guild in Database
+   * @param createGuildDto Creation data
+   * @returns Created Guild object
+   */
   create(createGuildDto: CreateGuildDto): Promise<Guild> {
     const guild = this.repository.create(createGuildDto);
     return this.repository.save(guild);
   }
 
-  async fetch(guildId: string): Promise<Guild> {
-    const guild = (await this.discordClient.fetchGuild(guildId)).data;
-    const bot = await this.botService.findOne(this.discordClient.appId);
-
-    bot.guilds = bot.guilds || [];
-    guild.bots = guild.bots || [];
-
-    bot.guilds.push(guild);
-    guild.bots.push(bot);
-
-    await this.repository.save(guild);
-    await this.botService.save(bot);
-    return this.findOne(guildId);
+  /**
+   * Save Guild in Database
+   * @param Guild Guild object
+   */
+  async save (Guild: Guild): Promise<void> {
+    await this.repository.save(Guild);
   }
 
+  /**
+   * Fetch Guild with specified ID from Discord API
+   * @param guildId Guild identifier
+   * @returns Fetched guild
+   */
+  async fetch(guildId: string): Promise<Guild> {
+    const guild = (await this.discordClient.fetchGuild(guildId)).data;
+    return this.repository.save(guild);
+  }
+
+  /**
+   * Fetch all Guilds from Discord Api of specified Bot
+   * @return Array of Guild object
+   */
+  async fetchAll(): Promise<Guild[]> {
+    const bot = this.discordClient.getBot();
+    const guilds = (await this.discordClient.fetchGuilds()).data;
+
+    bot.guilds = bot.guilds || [];
+    guilds.forEach(guild => {
+      if (!bot.guilds.includes(guild)) {
+        bot.guilds.push(guild);
+      }
+    });
+    await this.botService.save(bot);
+    return guilds;
+  }
+
+
+  /**
+   * Get all Guilds from Database
+   * @param appId Bot Application ID
+   * @returns Set of Guild object
+   */
   findAll(appId: string): Promise<Guild[]> {
     return this.repository
       .createQueryBuilder('guild')
       .innerJoin('guild.bots', 'bot')
-      .where('bot.appId = :appId', {appId})
+      .where('bot.id = :appId', {appId})
       .getMany();
   }
 
-  findOne(id: string) {
-    return this.repository.findOne({where: {id: id}});
+  /**
+   * Find one Guild from Database
+   * @param guildId Guild identifier
+   * @returns Guild object
+   */
+  findOne(guildId: string) {
+    return this.repository.findOne({where: {id: guildId}});
   }
 
-  update(id: string, updateGuildDto: UpdateGuildDto) {
-    return this.repository.update(id, updateGuildDto);
+  /**
+   * Update Guild details in Database
+   * @param guildId Guild identifier
+   * @param updateGuildDto Update data
+   * @returns Update Result
+   */
+  update(guildId: string, updateGuildDto: UpdateGuildDto) {
+    return this.repository.update(guildId, updateGuildDto);
   }
 
-  async remove(id: string) {
-    const guild = await this.repository.findOne({ where: { id: id } });
+  /**
+   * Delete Guild from Database
+   * @param guildId Guild identifier
+   * @returns Guild object
+   */
+  async remove(guildId: string) {
+    const guild = await this.repository.findOne({ where: { id: guildId } });
     return this.repository.remove(guild);
   }
 }
