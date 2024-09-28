@@ -19,6 +19,7 @@ import { UserModule } from './user/user.module';
       database: './db.sqlite',
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true,
+      autoLoadEntities: true
     }),
     BotModule,
     GuildModule,
