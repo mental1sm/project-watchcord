@@ -4,12 +4,16 @@ import { MessageController } from './message.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Message } from './entities/message.entity';
 import { BotModule } from 'src/bot/bot.module';
-import { MemberModule } from 'src/member/member.module';
 import { DiscordClientModule } from '../discord_client/discord.client.module';
 import { UserModule } from '../user/user.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Message]), BotModule, DiscordClientModule, UserModule],
+  imports: [
+    TypeOrmModule.forFeature([Message]),
+    BotModule,
+    DiscordClientModule,
+    UserModule,
+  ],
   controllers: [MessageController],
   providers: [MessageService],
 })

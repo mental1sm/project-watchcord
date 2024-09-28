@@ -1,5 +1,4 @@
-import {OmitType} from '@nestjs/swagger';
+import { PartialType } from '@nestjs/swagger';
 import { CreateBotDto } from './create-bot.dto';
 
-export class UpdateBotDto extends OmitType(CreateBotDto, ['id'] as const) {
-}
+export class UpdateBotDto extends PartialType(CreateBotDto) {}

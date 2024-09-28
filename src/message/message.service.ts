@@ -2,11 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Message } from './entities/message.entity';
 import { Repository } from 'typeorm';
-import { GuildService } from '../guild/guild.service';
 import { DiscordClientService } from '../discord_client/discord.client.service';
 import { MessageFetchingOptions } from '../discord_client/types/message.fetching.options.type';
-import { Member } from '../member/entities/member.entity';
-import { MemberService } from '../member/member.service';
 import { User } from '../user/entities/user.entity';
 import { UserService } from '../user/user.service';
 
@@ -24,7 +21,9 @@ export class MessageService {
    * @param messageId Message id
    */
   async fetch(channelId: string, messageId: string): Promise<Message> {
-    const message = (await this.discordClient.fetchMessage(channelId, messageId)).data;
+    const message = (
+      await this.discordClient.fetchMessage(channelId, messageId)
+    ).data;
     return this.repository.save(message);
   }
 
@@ -33,12 +32,17 @@ export class MessageService {
    * @param channelId channelId
    * @param options Query options
    */
-  async fetchAll(channelId: string, options: MessageFetchingOptions): Promise<Message[]> {
-    const messages = (await this.discordClient.fetchMessages(channelId, options)).data;
+  async fetchAll(
+    channelId: string,
+    options: MessageFetchingOptions,
+  ): Promise<Message[]> {
+    const messages = (
+      await this.discordClient.fetchMessages(channelId, options)
+    ).data;
 
     const uniqueAuthors = new Map<string, User>();
 
-    messages.forEach(m => {
+    messages.forEach((m) => {
       if (!uniqueAuthors.has(m.author.id)) {
         uniqueAuthors.set(m.author.id, m.author);
       }
@@ -49,7 +53,8 @@ export class MessageService {
       await this.userService.save(authors);
     }
 
-    return this.repository.save(messages);
+    await this.repository.save(messages);
+    return this.findAll(channelId, options);
   }
 
   /**
@@ -57,11 +62,24 @@ export class MessageService {
    * @param channelId Channel id
    * @param options Query options
    */
-  findAll(channelId: string, options: MessageFetchingOptions): Promise<Message[]> {
-    const queryBuilder = this.repository.createQueryBuilder('message').where('message.channel_id = :channelId', {channelId});
-    if (options.limit) { queryBuilder.limit(options.limit); }
-    if (options.after) { queryBuilder.andWhere('message.id >= :after', {after: options.after}); }
-    if (options.before) { queryBuilder.andWhere('message.id <= :before', {before: options.before}); }
+  findAll(
+    channelId: string,
+    options: MessageFetchingOptions,
+  ): Promise<Message[]> {
+    const queryBuilder = this.repository
+      .createQueryBuilder('message')
+      .where('message.channel_id = :channelId', { channelId });
+    if (options.limit) {
+      queryBuilder.limit(options.limit);
+    }
+    if (options.after) {
+      queryBuilder.andWhere('message.id >= :after', { after: options.after });
+    }
+    if (options.before) {
+      queryBuilder.andWhere('message.id <= :before', {
+        before: options.before,
+      });
+    }
     return queryBuilder.getMany();
   }
 
@@ -71,6 +89,8 @@ export class MessageService {
    * @param messageId Message id
    */
   findOne(channelId: string, messageId: string): Promise<Message> {
-    return this.repository.findOne({where: {channel_id: channelId, id: messageId}})
+    return this.repository.findOne({
+      where: { channel_id: channelId, id: messageId },
+    });
   }
 }

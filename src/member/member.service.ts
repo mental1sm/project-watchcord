@@ -5,7 +5,6 @@ import { Repository } from 'typeorm';
 import { DiscordClientService } from '../discord_client/discord.client.service';
 import { GuildService } from '../guild/guild.service';
 import { UserService } from '../user/user.service';
-import { User } from '../user/entities/user.entity';
 
 @Injectable()
 export class MemberService {
@@ -13,12 +12,11 @@ export class MemberService {
     @InjectRepository(Member) private readonly repository: Repository<Member>,
     private readonly discordClient: DiscordClientService,
     private readonly guildService: GuildService,
-    private readonly userService: UserService
-  ) {
-  }
+    private readonly userService: UserService,
+  ) {}
 
   save(members: Member[]) {
-    console.log(members)
+    console.log(members);
     return this.repository.save(members);
   }
 
@@ -27,10 +25,11 @@ export class MemberService {
    * @param guildId Guild id
    */
   async fetchAll(guildId: string): Promise<Member[]> {
-    const discordMembers = (await this.discordClient.fetchMembers(guildId)).data;
+    const discordMembers = (await this.discordClient.fetchMembers(guildId))
+      .data;
     const guild = await this.guildService.findOne(guildId);
 
-    discordMembers.forEach(member => member.guildId = guild.id);
+    discordMembers.forEach((member) => (member.guildId = guild.id));
     await this.repository.save(discordMembers);
 
     return this.repository.find();
@@ -42,15 +41,27 @@ export class MemberService {
    * @param memberId Member id
    */
   async fetch(guildId: string, memberId: string): Promise<Member> {
-    const member = (await this.discordClient.fetchMember(guildId, memberId)).data;
+    const member = (await this.discordClient.fetchMember(guildId, memberId))
+      .data;
     return this.repository.save(member);
   }
 
+  /**
+   * Find all members in Guild
+   * @param guildId Guild id
+   */
   async findAll(guildId: string) {
-    return this.repository.find({where: {guild: {id: guildId}}});
+    return this.repository.find({ where: { guild: { id: guildId } } });
   }
 
+  /**
+   * Find member in Guild
+   * @param guildId Guild id
+   * @param memberId Member id
+   */
   findOne(guildId: string, memberId: string): Promise<Member> {
-    return this.repository.findOne({where: {guild: {id: guildId}, user: {id: memberId}}});
+    return this.repository.findOne({
+      where: { guild: { id: guildId }, user: { id: memberId } },
+    });
   }
 }

@@ -4,7 +4,10 @@ import { ApiProperty } from '@nestjs/swagger';
 export class CreateChannelDto {
   @IsNotEmpty()
   @IsString()
-  @ApiProperty({ description: 'ID of the channel', example: '1265709282679066689' })
+  @ApiProperty({
+    description: 'ID of the channel',
+    example: '1265709282679066689',
+  })
   id: string;
   @IsNotEmpty()
   @IsString()

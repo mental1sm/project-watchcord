@@ -1,6 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { CreateGuildDto } from './dto/create-guild.dto';
-import { UpdateGuildDto } from './dto/update-guild.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Guild } from './entities/guild.entity';
 import { Repository } from 'typeorm';
@@ -13,24 +11,13 @@ export class GuildService {
     @InjectRepository(Guild) private readonly repository: Repository<Guild>,
     private readonly discordClient: DiscordClientService,
     private readonly botService: BotService,
-  ) {
-  }
-
-  /**
-   * Create Guild in Database
-   * @param createGuildDto Creation data
-   * @returns Created Guild object
-   */
-  create(createGuildDto: CreateGuildDto): Promise<Guild> {
-    const guild = this.repository.create(createGuildDto);
-    return this.repository.save(guild);
-  }
+  ) {}
 
   /**
    * Save Guild in Database
    * @param Guild Guild object
    */
-  async save (Guild: Guild): Promise<void> {
+  async save(Guild: Guild): Promise<void> {
     await this.repository.save(Guild);
   }
 
@@ -53,7 +40,7 @@ export class GuildService {
     const guilds = (await this.discordClient.fetchGuilds()).data;
 
     bot.guilds = bot.guilds || [];
-    guilds.forEach(guild => {
+    guilds.forEach((guild) => {
       if (!bot.guilds.includes(guild)) {
         bot.guilds.push(guild);
       }
@@ -61,7 +48,6 @@ export class GuildService {
     await this.botService.save(bot);
     return this.repository.find();
   }
-
 
   /**
    * Get all Guilds from Database
@@ -72,7 +58,7 @@ export class GuildService {
     return this.repository
       .createQueryBuilder('guild')
       .innerJoin('guild.bots', 'bot')
-      .where('bot.id = :appId', {appId})
+      .where('bot.id = :appId', { appId })
       .getMany();
   }
 
@@ -82,17 +68,7 @@ export class GuildService {
    * @returns Guild object
    */
   findOne(guildId: string) {
-    return this.repository.findOne({where: {id: guildId}});
-  }
-
-  /**
-   * Update Guild details in Database
-   * @param guildId Guild identifier
-   * @param updateGuildDto Update data
-   * @returns Update Result
-   */
-  update(guildId: string, updateGuildDto: UpdateGuildDto) {
-    return this.repository.update(guildId, updateGuildDto);
+    return this.repository.findOne({ where: { id: guildId } });
   }
 
   /**

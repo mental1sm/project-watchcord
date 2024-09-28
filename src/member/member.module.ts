@@ -9,7 +9,13 @@ import { GuildModule } from '../guild/guild.module';
 import { UserModule } from '../user/user.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Member]), DiscordClientModule, BotModule, GuildModule, UserModule],
+  imports: [
+    TypeOrmModule.forFeature([Member]),
+    DiscordClientModule,
+    BotModule,
+    GuildModule,
+    UserModule,
+  ],
   exports: [MemberService],
   controllers: [MemberController],
   providers: [MemberService],

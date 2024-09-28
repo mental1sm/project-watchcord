@@ -1,21 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import { CreateChannelDto } from './dto/create-channel.dto';
 import { UpdateChannelDto } from './dto/update-channel.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Channel } from './entities/channel.entity';
 import { Repository } from 'typeorm';
 import { DiscordClientService } from '../discord_client/discord.client.service';
-import { BotService } from '../bot/bot.service';
 import { GuildService } from '../guild/guild.service';
-import { Guild } from '../guild/entities/guild.entity';
-import { CreateGuildDto } from '../guild/dto/create-guild.dto';
 
 @Injectable()
 export class ChannelService {
   constructor(
-    @InjectRepository(Channel) private readonly channelRepository: Repository<Channel>,
+    @InjectRepository(Channel)
+    private readonly channelRepository: Repository<Channel>,
     private readonly discordClient: DiscordClientService,
-    private readonly guildService: GuildService
+    private readonly guildService: GuildService,
   ) {}
 
   /**
@@ -26,11 +23,11 @@ export class ChannelService {
     const guild = await this.guildService.findOne(guildId);
     const channels = (await this.discordClient.fetchChannels(guildId)).data;
     await Promise.allSettled(
-      channels.map(channel => {
+      channels.map((channel) => {
         channel.guild = guild;
-        return this.channelRepository.save(channel)
-      }
-      ));
+        return this.channelRepository.save(channel);
+      }),
+    );
 
     return this.findAll(guildId);
   }
@@ -50,9 +47,11 @@ export class ChannelService {
    */
   findAll(guildId: string): Promise<Channel[]> {
     return this.channelRepository.find({
-      where: { guild: {
-        id: guildId,
-        }},
+      where: {
+        guild: {
+          id: guildId,
+        },
+      },
     });
   }
 
@@ -61,7 +60,7 @@ export class ChannelService {
    * @param id Guild identifier
    */
   findOne(id: string) {
-    return this.channelRepository.findOne({where: {id: id}});
+    return this.channelRepository.findOne({ where: { id: id } });
   }
 
   /**
@@ -78,7 +77,7 @@ export class ChannelService {
    * @param id Guild id
    */
   async remove(id: string) {
-    const channel = await this.channelRepository.findOne({where: {id: id}});
+    const channel = await this.channelRepository.findOne({ where: { id: id } });
     return this.channelRepository.remove(channel);
   }
 }

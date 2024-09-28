@@ -1,6 +1,18 @@
-import { Controller, Get, Post, Param, UseInterceptors, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  UseInterceptors,
+  Query,
+  DefaultValuePipe,
+} from '@nestjs/common';
 import { ChannelService } from './channel.service';
-import { ApiOkResponse, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
+import {
+  ApiOkResponse,
+  ApiOperation,
+  ApiQuery,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Channel } from './entities/channel.entity';
 import { BotContextInterceptor } from '../bot/bot.interceptor';
 
@@ -8,15 +20,17 @@ import { BotContextInterceptor } from '../bot/bot.interceptor';
 @UseInterceptors(BotContextInterceptor)
 @Controller('bot/:appId/guilds/:guildId/channels')
 export class ChannelController {
-  constructor(
-    private readonly channelService: ChannelService
-  ) {}
+  constructor(private readonly channelService: ChannelService) {}
 
   @Get()
-  @ApiOperation({summary: 'Find all channels from Database'})
-  @ApiOkResponse({description: "Found successfully", type: Channel, isArray: true})
-  @ApiQuery({name: 'fetch', description: 'Fetch from Discord API'})
-  findAll(@Param('guildId') guildId: string, @Query('fetch') fetch: boolean) {
+  @ApiOperation({ summary: 'Find all channels from Database' })
+  @ApiOkResponse({
+    description: 'Found successfully',
+    type: Channel,
+    isArray: true,
+  })
+  @ApiQuery({ name: 'fetch', description: 'Fetch from Discord API', required: false })
+  findAll(@Param('guildId') guildId: string, @Query('fetch', new DefaultValuePipe(false)) fetch: boolean) {
     if (fetch) {
       return this.channelService.fetchAll(guildId);
     }
@@ -24,10 +38,17 @@ export class ChannelController {
   }
 
   @Get(':channelId')
-  @ApiOperation({summary: 'Find specified Channel from Database'})
-  @ApiOkResponse({description: "Found successfully", type: Channel, isArray: false})
-  @ApiQuery({name: 'fetch', description: 'Fetch from Discord API'})
-  findOne(@Param('channelId') channelId: string, @Query('fetch') fetch: boolean) {
+  @ApiOperation({ summary: 'Find specified Channel from Database' })
+  @ApiOkResponse({
+    description: 'Found successfully',
+    type: Channel,
+    isArray: false,
+  })
+  @ApiQuery({ name: 'fetch', description: 'Fetch from Discord API', required: false })
+  findOne(
+    @Param('channelId') channelId: string,
+    @Query('fetch', new DefaultValuePipe(false)) fetch: boolean,
+  ) {
     if (fetch) {
       return this.channelService.fetch(channelId);
     }

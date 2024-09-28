@@ -1,8 +1,8 @@
 {
   "name": "project-watchcord",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "",
-  "author": "",
+  "author": "mental1sm",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {

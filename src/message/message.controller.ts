@@ -1,6 +1,11 @@
-import { Controller, Get, Post, Param, Query, UseInterceptors } from '@nestjs/common';
+import { Controller, DefaultValuePipe, Get, Param, Query, UseInterceptors } from '@nestjs/common';
 import { MessageService } from './message.service';
-import { ApiOkResponse, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
+import {
+  ApiOkResponse,
+  ApiOperation,
+  ApiQuery,
+  ApiTags,
+} from '@nestjs/swagger';
 import { MessageDto } from './dto/message.dto';
 import { MessageFetchingOptions } from '../discord_client/types/message.fetching.options.type';
 import { BotContextInterceptor } from '../bot/bot.interceptor';
@@ -9,18 +14,17 @@ import { BotContextInterceptor } from '../bot/bot.interceptor';
 @UseInterceptors(BotContextInterceptor)
 @Controller('bot/:appId/guilds/:guildId/channels/:channelId/messages')
 export class MessageController {
-  constructor(
-    private readonly messageService: MessageService
-  ) {}
+  constructor(private readonly messageService: MessageService) {}
 
   @Get()
-  @ApiOperation({summary: 'Fetch all messages in channel'})
-  @ApiOkResponse({type: MessageDto, isArray: true})
-  @ApiQuery({name: 'fetch', description: 'Fetch from Discord API'})
+  @ApiOperation({ summary: 'Fetch all messages in channel' })
+  @ApiOkResponse({ type: MessageDto, isArray: true })
+  @ApiQuery({ name: 'fetch', description: 'Fetch from Discord API', required: false })
   findAll(
     @Query() queryOptions: MessageFetchingOptions,
-    @Query('fetch') fetch: boolean, @Param('channelId') channelId: string)
-  {
+    @Query('fetch', new DefaultValuePipe(false)) fetch: boolean,
+    @Param('channelId') channelId: string,
+  ) {
     if (fetch) {
       return this.messageService.fetchAll(channelId, queryOptions);
     }
@@ -28,12 +32,14 @@ export class MessageController {
   }
 
   @Get(':messageId')
-  @ApiOperation({summary: 'Fetch message'})
-  @ApiOkResponse({type: MessageDto, isArray: false})
-  @ApiQuery({name: 'fetch', description: 'Fetch from Discord API'})
-  findOne(@Param('messageId') messageId: string, @Param('channelId') channelId: string,
-          @Query('fetch') fetch: boolean)
-  {
+  @ApiOperation({ summary: 'Fetch message' })
+  @ApiOkResponse({ type: MessageDto, isArray: false })
+  @ApiQuery({ name: 'fetch', description: 'Fetch from Discord API', required: false })
+  findOne(
+    @Param('messageId') messageId: string,
+    @Param('channelId') channelId: string,
+    @Query('fetch', new DefaultValuePipe(false)) fetch: boolean,
+  ) {
     if (fetch) {
       return this.messageService.fetch(channelId, messageId);
     }

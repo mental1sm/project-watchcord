@@ -21,20 +21,19 @@ export class BotService {
   async add(createBotDto: CreateBotDto): Promise<Bot> {
     const b = new Bot();
     b.token = createBotDto.token;
-    b.id = createBotDto.id;
     this.discordClient.setBot(b);
 
     const fetchedBot = (await this.discordClient.fetchBot()).data;
-    let bot = this.repository.create(fetchedBot);
+    const bot = this.repository.create(fetchedBot);
     bot.token = createBotDto.token;
-    
+
     return this.repository.save(bot);
   }
 
   /**
    * Saves Bot at database
-   * @param bot 
-   * @returns Bot object with updated info 
+   * @param bot
+   * @returns Bot object with updated info
    */
   save(bot: Bot): Promise<Bot> {
     return this.repository.save(bot);
@@ -49,7 +48,7 @@ export class BotService {
   }
 
   /**
-   * 
+   *
    * @param appId Application ID of Bot
    * @returns Bot object
    */
@@ -58,7 +57,7 @@ export class BotService {
   }
 
   /**
-   * 
+   *
    * @param appId Application ID of Bot
    * @param updateBotDto Updation data
    * @returns Update result
@@ -68,7 +67,7 @@ export class BotService {
   }
 
   /**
-   * 
+   *
    * @param appId Application ID of Bot
    * @returns Bot object
    */
