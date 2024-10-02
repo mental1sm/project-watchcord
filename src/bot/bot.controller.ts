@@ -5,7 +5,7 @@ import {
   Body,
   Patch,
   Param,
-  Delete, HttpCode,
+  Delete, HttpCode, Put,
 } from '@nestjs/common';
 import { BotService } from './bot.service';
 import { CreateBotDto } from './dto/create-bot.dto';
@@ -17,6 +17,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { Bot } from './entities/bot.entity';
+import { GetBotDto } from './dto/get-bot.dto';
 
 @ApiTags('Bot')
 @Controller('bot')
@@ -27,9 +28,7 @@ export class BotController {
   @ApiOperation({ summary: 'Add new bot and init it' })
   @ApiResponse({
     status: 201,
-    description: 'Successfully fetched',
-    type: Bot,
-    isArray: false,
+    description: 'Successfully fetched'
   })
   @HttpCode(201)
   async fetch(@Body() createBotDto: CreateBotDto) {
@@ -40,11 +39,18 @@ export class BotController {
   @ApiOperation({ summary: 'Get all bots' })
   @ApiOkResponse({
     description: 'All your Bots details',
-    type: Bot,
+    type: GetBotDto,
     isArray: true,
   })
-  findAll() {
-    return this.botService.findAll();
+  async findAll() {
+    const bots = await this.botService.findAll();
+    return Promise.all(bots.map(async (bot) => {
+      const guildCount = await this.botService.countGuildsForBot(bot.id);
+      return {
+        ...bot,
+        guilds_count: guildCount
+      };
+    }))
   }
 
   @Get(':appId')
@@ -59,7 +65,7 @@ export class BotController {
     return this.botService.findOne(appId);
   }
 
-  @Patch(':appId')
+  @Put(':appId')
   @ApiOperation({ summary: 'Update bot' })
   @ApiResponse({
     status: 200,

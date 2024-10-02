@@ -7,7 +7,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "build": "nest build",
-    "build:release":  "ncc build -o build/lib ./dist/main.js && pkg -t node16-win-x64 -o build/project-watchcord-server.exe ./build/lib/index.js",
+    "build:release":  "nest build && ncc build -o build/lib ./dist/main.js && pkg -t node16-win-x64 -o build/project-watchcord-server.exe ./build/lib/index.js",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",

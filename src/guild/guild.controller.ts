@@ -21,7 +21,7 @@ export class GuildController {
   @ApiQuery({ name: 'fetch', description: 'Fetch from Discord API', required: false })
   findAll(@Param('appId') appId: string, @Query('fetch', new DefaultValuePipe(false)) fetch: boolean) {
     if (fetch) {
-      return this.guildService.findAll(appId);
+      return this.guildService.fetchAll();
     }
     return this.guildService.findAll(appId);
   }

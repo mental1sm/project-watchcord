@@ -34,7 +34,7 @@ export class Bot extends BaseEntity {
   @Column({ name: 'avatar', type: 'text', nullable: true })
   avatar: string;
 
-  @ManyToMany(() => Guild, (guild) => guild.bots, { cascade: true })
+  @ManyToMany(() => Guild, (guild) => guild.bots, { cascade: true, lazy: true })
   @JoinTable()
   guilds: Guild[];
 

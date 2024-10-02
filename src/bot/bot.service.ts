@@ -75,4 +75,13 @@ export class BotService {
     const bot = await this.repository.findOne({ where: { id: appId } });
     return this.repository.remove(bot);
   }
+
+  /**
+   * Count Guilds of Bot
+   * @param botId Bot id
+   */
+  async countGuildsForBot(botId: string): Promise<number> {
+    const bot = await this.repository.findOne({ where: { id: botId }, relations: ['guilds'] });
+    return bot ? (await bot.guilds).length : 0;
+  }
 }

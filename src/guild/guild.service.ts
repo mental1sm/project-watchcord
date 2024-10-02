@@ -39,12 +39,15 @@ export class GuildService {
     const bot = this.discordClient.getBot();
     const guilds = (await this.discordClient.fetchGuilds()).data;
 
-    bot.guilds = bot.guilds || [];
+    const existingGuilds = (await bot.guilds) || [];
     guilds.forEach((guild) => {
-      if (!bot.guilds.includes(guild)) {
-        bot.guilds.push(guild);
+      if (!existingGuilds.some(existingGuild => existingGuild.id === guild.id)) {
+        existingGuilds.push(guild);
       }
     });
+
+    bot.guilds = existingGuilds;
+
     await this.botService.save(bot);
     return this.repository.find();
   }
