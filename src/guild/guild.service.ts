@@ -57,7 +57,7 @@ export class GuildService {
    * @param appId Bot Application ID
    * @returns Set of Guild object
    */
-  findAll(appId: string): Promise<Guild[]> {
+  async findAll(appId: string): Promise<Guild[]> {
     return this.repository
       .createQueryBuilder('guild')
       .innerJoin('guild.bots', 'bot')
@@ -82,5 +82,23 @@ export class GuildService {
   async remove(guildId: string) {
     const guild = await this.repository.findOne({ where: { id: guildId } });
     return this.repository.remove(guild);
+  }
+
+  async getGuildStatistics(): Promise<{ guildId: string, channelCount: number, memberCount: number }[]> {
+    const result = await this.repository
+      .createQueryBuilder('guild')
+      .leftJoin('guild.channels', 'channel')
+      .leftJoin('guild.members', 'member')
+      .select('guild.id', 'guildId')
+      .addSelect('COUNT(DISTINCT channel.id)', 'channelCount')
+      .addSelect('COUNT(DISTINCT member.userId)', 'memberCount')
+      .groupBy('guild.id')
+      .getRawMany();
+
+    return result.map(row => ({
+      guildId: row.guildId,
+      channelCount: parseInt(row.channelCount, 10),
+      memberCount: parseInt(row.memberCount, 10),
+    }));
   }
 }

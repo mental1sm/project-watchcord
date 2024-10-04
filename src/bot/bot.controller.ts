@@ -32,6 +32,7 @@ export class BotController {
   })
   @HttpCode(201)
   async fetch(@Body() createBotDto: CreateBotDto) {
+    console.log(createBotDto.token);
     await this.botService.add(createBotDto);
   }
 

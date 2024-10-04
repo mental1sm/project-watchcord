@@ -29,9 +29,9 @@ export class Guild {
   @ManyToMany(() => Bot, (bot) => bot.guilds)
   bots: Bot[];
 
-  @OneToMany(() => Channel, (channel) => channel.guild)
+  @OneToMany(() => Channel, (channel) => channel.guild, {lazy: true})
   channels: Channel[];
 
-  @OneToMany(() => Member, (member) => member.guild)
+  @OneToMany(() => Member, (member) => member.guild, {lazy: true})
   members: Member[];
 }
