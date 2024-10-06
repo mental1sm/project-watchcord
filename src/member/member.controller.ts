@@ -10,7 +10,6 @@ import { BotContextInterceptor } from '../bot/bot.interceptor';
 import { MemberDto } from './dto/member.dto';
 
 @ApiTags('Member')
-@UseInterceptors(BotContextInterceptor)
 @Controller('bot/:appId/guilds/:guildId/members')
 export class MemberController {
   constructor(private readonly memberService: MemberService) {}

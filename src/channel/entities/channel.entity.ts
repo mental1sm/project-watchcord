@@ -1,6 +1,7 @@
 import { Column, Entity, ManyToOne, PrimaryColumn } from 'typeorm';
 import { Guild } from '../../guild/entities/guild.entity';
 import { ApiProperty } from '@nestjs/swagger';
+import { ThreadMetadata } from './channel.thread.metadata';
 
 @Entity()
 export class Channel {
@@ -10,24 +11,29 @@ export class Channel {
     example: '1287831564524454010',
   })
   id: string;
+
   @Column({ name: 'name', type: 'text' })
   @ApiProperty({ description: 'Channel name', example: 'Flood' })
   name: string;
+
   @Column({ name: 'last_message_id', type: 'text', nullable: true })
   @ApiProperty({
     description: 'Id of last sent message',
     example: '1287831564524454010',
   })
   last_message_id: string;
+
   @Column({ name: 'last_read_message_id', type: 'text', nullable: true })
   @ApiProperty({
     description: 'Id of last read message',
     example: '1237831564524454010',
   })
   last_read_message_id: string;
+
   @Column({ name: 'total_message_sent', type: 'integer', nullable: true })
   @ApiProperty({ description: 'Total message sent', example: '329' })
   total_message_sent: number;
+
   @Column({ name: 'position', type: 'integer', nullable: true })
   @ApiProperty({
     description:
@@ -35,6 +41,7 @@ export class Channel {
     example: '4',
   })
   position: number;
+
   @Column({ name: 'parent_id', type: 'text', nullable: true })
   @ApiProperty({
     description:

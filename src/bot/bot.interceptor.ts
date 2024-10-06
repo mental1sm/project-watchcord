@@ -22,6 +22,8 @@ export class BotContextInterceptor implements NestInterceptor {
     const http = context.switchToHttp();
     const request = http.getRequest();
     const bot = await this.botService.findOne(request.query['appId']);
+    console.log(`bot: ${bot.username}`)
+    console.log(`query: ${request.appId}`);
     this.discordClient.setBot(bot);
     return next.handle();
   }

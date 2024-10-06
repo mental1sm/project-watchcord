@@ -28,9 +28,12 @@ export class MemberService {
     const discordMembers = (await this.discordClient.fetchMembers(guildId))
       .data;
     const guild = await this.guildService.findOne(guildId);
-
-    discordMembers.forEach((member) => (member.guildId = guild.id));
-    await this.repository.save(discordMembers);
+    const members = discordMembers.map((member) => {
+      member.guildId = guildId;
+      return member;
+    });
+    await this.userService.save(members.map((m) => m.user));
+    await this.repository.save(members);
 
     return this.repository.find();
   }

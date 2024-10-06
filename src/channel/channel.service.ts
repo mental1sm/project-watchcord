@@ -22,6 +22,10 @@ export class ChannelService {
   async fetchAll(guildId: string): Promise<Channel[]> {
     const guild = await this.guildService.findOne(guildId);
     const channels = (await this.discordClient.fetchChannels(guildId)).data;
+    const threads = (await this.discordClient.fetchActiveThreads(guildId)).data['threads'];
+    threads.forEach(t => {
+      channels.push(t);
+    })
     await Promise.allSettled(
       channels.map((channel) => {
         channel.guild = guild;

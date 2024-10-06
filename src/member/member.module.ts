@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { MemberService } from './member.service';
 import { MemberController } from './member.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -7,6 +7,7 @@ import { DiscordClientModule } from '../discord_client/discord.client.module';
 import { BotModule } from '../bot/bot.module';
 import { GuildModule } from '../guild/guild.module';
 import { UserModule } from '../user/user.module';
+import { BotContextMiddleware } from '../bot/bot.middleware';
 
 @Module({
   imports: [
@@ -20,4 +21,8 @@ import { UserModule } from '../user/user.module';
   controllers: [MemberController],
   providers: [MemberService],
 })
-export class MemberModule {}
+export class MemberModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(BotContextMiddleware).forRoutes(MemberController);
+  }
+}

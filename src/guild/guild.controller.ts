@@ -1,12 +1,10 @@
-import { Controller, Get, Param, UseInterceptors, Query, DefaultValuePipe } from '@nestjs/common';
+import { Controller, Get, Param, Query, DefaultValuePipe } from '@nestjs/common';
 import { GuildService } from './guild.service';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Guild } from './entities/guild.entity';
-import { BotContextInterceptor } from '../bot/bot.interceptor';
 import { GuildDto } from './dto/guild.dto';
+import { Guild } from './entities/guild.entity';
 
 @ApiTags('Guild')
-@UseInterceptors(BotContextInterceptor)
 @Controller('bot/:appId/guilds')
 export class GuildController {
   constructor(private readonly guildService: GuildService) {}
@@ -21,11 +19,12 @@ export class GuildController {
   })
   @ApiQuery({ name: 'fetch', description: 'Fetch from Discord API', required: false })
   async findAll(@Param('appId') appId: string, @Query('fetch', new DefaultValuePipe(false)) fetch: boolean) {
+    let guilds: GuildDto[] = [];
     if (fetch) {
-      return this.guildService.fetchAll();
+      guilds = await this.guildService.fetchAll() as unknown as GuildDto[];
+    } else {
+      guilds = await this.guildService.findAll(appId) as unknown as GuildDto[];
     }
-
-    const guilds = await this.guildService.findAll(appId) as unknown as GuildDto[];
     const guildStatistics = await this.guildService.getGuildStatistics();
 
     return guilds.map((guild) => {

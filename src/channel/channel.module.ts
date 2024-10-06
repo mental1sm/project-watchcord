@@ -1,4 +1,4 @@
-import { DefaultValuePipe, Module } from '@nestjs/common';
+import { DefaultValuePipe, MiddlewareConsumer, Module } from '@nestjs/common';
 import { ChannelService } from './channel.service';
 import { ChannelController } from './channel.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -6,6 +6,7 @@ import { Channel } from './entities/channel.entity';
 import { DiscordClientModule } from '../discord_client/discord.client.module';
 import { BotModule } from '../bot/bot.module';
 import { GuildModule } from '../guild/guild.module';
+import { BotContextMiddleware } from '../bot/bot.middleware';
 
 @Module({
   imports: [
@@ -17,4 +18,8 @@ import { GuildModule } from '../guild/guild.module';
   controllers: [ChannelController],
   providers: [ChannelService],
 })
-export class ChannelModule {}
+export class ChannelModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(BotContextMiddleware).forRoutes(ChannelController);
+  }
+}

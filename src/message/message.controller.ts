@@ -1,4 +1,4 @@
-import { Controller, DefaultValuePipe, Get, Param, Query, UseInterceptors } from '@nestjs/common';
+import { Controller, DefaultValuePipe, Get, Param, Query } from '@nestjs/common';
 import { MessageService } from './message.service';
 import {
   ApiOkResponse,
@@ -8,10 +8,8 @@ import {
 } from '@nestjs/swagger';
 import { MessageDto } from './dto/message.dto';
 import { MessageFetchingOptions } from '../discord_client/types/message.fetching.options.type';
-import { BotContextInterceptor } from '../bot/bot.interceptor';
 
 @ApiTags('Message')
-@UseInterceptors(BotContextInterceptor)
 @Controller('bot/:appId/guilds/:guildId/channels/:channelId/messages')
 export class MessageController {
   constructor(private readonly messageService: MessageService) {}

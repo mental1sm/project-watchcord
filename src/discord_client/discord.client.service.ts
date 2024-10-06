@@ -76,6 +76,14 @@ export class DiscordClientService {
   }
 
   /**
+   * Fetch all active threads from Guild
+   * @param guildId Guild id
+   */
+  async fetchActiveThreads(guildId: string): Promise<AxiosResponse<Channel[]>> {
+    return this.get(`/guilds/${guildId}/threads/active`)
+  }
+
+  /**
    * Fetch channel with specified ID
    * @param channelId Channel identifier
    */

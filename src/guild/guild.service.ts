@@ -49,7 +49,7 @@ export class GuildService {
     bot.guilds = existingGuilds;
 
     await this.botService.save(bot);
-    return this.repository.find();
+    return this.repository.find({where: {bots: {id: bot.id}}});
   }
 
   /**

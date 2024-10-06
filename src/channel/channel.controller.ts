@@ -2,7 +2,6 @@ import {
   Controller,
   Get,
   Param,
-  UseInterceptors,
   Query,
   DefaultValuePipe,
 } from '@nestjs/common';
@@ -14,10 +13,8 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { Channel } from './entities/channel.entity';
-import { BotContextInterceptor } from '../bot/bot.interceptor';
 
 @ApiTags('Channel')
-@UseInterceptors(BotContextInterceptor)
 @Controller('bot/:appId/guilds/:guildId/channels')
 export class ChannelController {
   constructor(private readonly channelService: ChannelService) {}
