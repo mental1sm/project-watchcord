@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Member } from 'src/member/entities/member.entity';
+import { User } from '../../user/entities/user.entity';
 
 export class MessageDto {
   @ApiProperty({ description: 'Message id', example: '391660784041852929' })
@@ -16,6 +16,6 @@ export class MessageDto {
   @ApiProperty({ name: 'Content of message', example: 'Hi @everyone!' })
   content: string;
 
-  @ApiProperty({ type: Member, description: 'Author of message' })
-  author: Member;
+  @ApiProperty({ type: User, description: 'Author of message' })
+  author: User;
 }

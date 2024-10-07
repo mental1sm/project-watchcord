@@ -1,4 +1,4 @@
-import { Controller, DefaultValuePipe, Get, Param, Query } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { MessageService } from './message.service';
 import {
   ApiOkResponse,
@@ -8,6 +8,7 @@ import {
 } from '@nestjs/swagger';
 import { MessageDto } from './dto/message.dto';
 import { MessageFetchingOptions } from '../discord_client/types/message.fetching.options.type';
+import { ParseBooleanPipe } from '../pipes/ParseBooleanPipe';
 
 @ApiTags('Message')
 @Controller('bot/:appId/guilds/:guildId/channels/:channelId/messages')
@@ -20,10 +21,10 @@ export class MessageController {
   @ApiQuery({ name: 'fetch', description: 'Fetch from Discord API', required: false })
   findAll(
     @Query() queryOptions: MessageFetchingOptions,
-    @Query('fetch', new DefaultValuePipe(false)) fetch: boolean,
+    @Query('fetch', new ParseBooleanPipe()) fetch: boolean,
     @Param('channelId') channelId: string,
   ) {
-    if (fetch) {
+    if (fetch === true) {
       return this.messageService.fetchAll(channelId, queryOptions);
     }
     return this.messageService.findAll(channelId, queryOptions);
@@ -36,9 +37,9 @@ export class MessageController {
   findOne(
     @Param('messageId') messageId: string,
     @Param('channelId') channelId: string,
-    @Query('fetch', new DefaultValuePipe(false)) fetch: boolean,
+    @Query('fetch', new ParseBooleanPipe()) fetch: boolean,
   ) {
-    if (fetch) {
+    if (fetch === true) {
       return this.messageService.fetch(channelId, messageId);
     }
     return this.messageService.findOne(channelId, messageId);

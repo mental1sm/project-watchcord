@@ -55,7 +55,7 @@ export class ChannelService {
         guild: {
           id: guildId,
         },
-      },
+      }
     });
   }
 

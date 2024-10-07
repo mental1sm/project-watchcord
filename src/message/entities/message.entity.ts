@@ -27,7 +27,7 @@ export class Message {
   })
   content: string;
 
-  @ManyToOne(() => User, (user) => user.messages)
+  @ManyToOne(() => User, (user) => user.messages, {eager: true})
   @ApiProperty({ type: User, description: 'Author of message' })
   author: User;
 }

@@ -1,8 +1,8 @@
-import { Controller, Get, Param, Query, DefaultValuePipe } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { GuildService } from './guild.service';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { GuildDto } from './dto/guild.dto';
-import { Guild } from './entities/guild.entity';
+import { ParseBooleanPipe } from '../pipes/ParseBooleanPipe';
 
 @ApiTags('Guild')
 @Controller('bot/:appId/guilds')
@@ -18,9 +18,9 @@ export class GuildController {
     isArray: true,
   })
   @ApiQuery({ name: 'fetch', description: 'Fetch from Discord API', required: false })
-  async findAll(@Param('appId') appId: string, @Query('fetch', new DefaultValuePipe(false)) fetch: boolean) {
+  async findAll(@Param('appId') appId: string, @Query('fetch', new ParseBooleanPipe()) fetch: boolean) {
     let guilds: GuildDto[] = [];
-    if (fetch) {
+    if (fetch === true) {
       guilds = await this.guildService.fetchAll() as unknown as GuildDto[];
     } else {
       guilds = await this.guildService.findAll(appId) as unknown as GuildDto[];
@@ -47,8 +47,8 @@ export class GuildController {
     isArray: false,
   })
   @ApiQuery({ name: 'fetch', description: 'Fetch from Discord API', required: false })
-  findOne(@Param('guildId') guildId: string, @Query('fetch', new DefaultValuePipe(false)) fetch: boolean) {
-    if (fetch) {
+  findOne(@Param('guildId') guildId: string, @Query('fetch', new ParseBooleanPipe()) fetch: boolean) {
+    if (fetch === true) {
       return this.guildService.fetch(guildId);
     }
     return this.guildService.findOne(guildId);

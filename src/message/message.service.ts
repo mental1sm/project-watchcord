@@ -68,7 +68,11 @@ export class MessageService {
   ): Promise<Message[]> {
     const queryBuilder = this.repository
       .createQueryBuilder('message')
-      .where('message.channel_id = :channelId', { channelId });
+      .leftJoinAndSelect('message.author', 'user')
+      .leftJoinAndSelect('user.membership', 'member')
+      .where('message.channel_id = :channelId', { channelId })
+      .orderBy('message.id', 'ASC');
+
     if (options.limit) {
       queryBuilder.limit(options.limit);
     }

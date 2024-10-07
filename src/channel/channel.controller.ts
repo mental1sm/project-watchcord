@@ -2,8 +2,7 @@ import {
   Controller,
   Get,
   Param,
-  Query,
-  DefaultValuePipe,
+  Query
 } from '@nestjs/common';
 import { ChannelService } from './channel.service';
 import {
@@ -13,6 +12,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { Channel } from './entities/channel.entity';
+import { ParseBooleanPipe } from '../pipes/ParseBooleanPipe';
 
 @ApiTags('Channel')
 @Controller('bot/:appId/guilds/:guildId/channels')
@@ -27,8 +27,8 @@ export class ChannelController {
     isArray: true,
   })
   @ApiQuery({ name: 'fetch', description: 'Fetch from Discord API', required: false })
-  findAll(@Param('guildId') guildId: string, @Query('fetch', new DefaultValuePipe(false)) fetch: boolean) {
-    if (fetch) {
+  findAll(@Param('guildId') guildId: string, @Query('fetch', new ParseBooleanPipe()) fetch: boolean) {
+    if (fetch === true) {
       return this.channelService.fetchAll(guildId);
     }
     return this.channelService.findAll(guildId);
@@ -44,9 +44,9 @@ export class ChannelController {
   @ApiQuery({ name: 'fetch', description: 'Fetch from Discord API', required: false })
   findOne(
     @Param('channelId') channelId: string,
-    @Query('fetch', new DefaultValuePipe(false)) fetch: boolean,
+    @Query('fetch', new ParseBooleanPipe()) fetch: boolean,
   ) {
-    if (fetch) {
+    if (fetch === true) {
       return this.channelService.fetch(channelId);
     }
     return this.channelService.findOne(channelId);
