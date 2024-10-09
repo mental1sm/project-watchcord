@@ -71,7 +71,7 @@ export class MessageService {
       .leftJoinAndSelect('message.author', 'user')
       .leftJoinAndSelect('user.membership', 'member')
       .where('message.channel_id = :channelId', { channelId })
-      .orderBy('message.id', 'ASC');
+      .orderBy('message.id', 'DESC');
 
     if (options.limit) {
       queryBuilder.limit(options.limit);
@@ -84,7 +84,7 @@ export class MessageService {
         before: options.before,
       });
     }
-    return queryBuilder.getMany();
+    return queryBuilder.getMany().then(messages => messages.reverse());
   }
 
   /**

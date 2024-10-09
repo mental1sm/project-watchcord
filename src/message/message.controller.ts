@@ -19,13 +19,14 @@ export class MessageController {
   @ApiOperation({ summary: 'Fetch all messages in channel' })
   @ApiOkResponse({ type: MessageDto, isArray: true })
   @ApiQuery({ name: 'fetch', description: 'Fetch from Discord API', required: false })
-  findAll(
+  async findAll(
     @Query() queryOptions: MessageFetchingOptions,
     @Query('fetch', new ParseBooleanPipe()) fetch: boolean,
     @Param('channelId') channelId: string,
   ) {
     if (fetch === true) {
-      return this.messageService.fetchAll(channelId, queryOptions);
+      const oldMessages = await this.messageService.findAll(channelId, queryOptions);
+      return oldMessages.length < 50 ? this.messageService.fetchAll(channelId, queryOptions) : oldMessages;
     }
     return this.messageService.findAll(channelId, queryOptions);
   }
