@@ -2,6 +2,12 @@ import { HttpService } from '@nestjs/axios';
 import { Injectable, Scope } from '@nestjs/common';
 import { AxiosResponse } from 'axios';
 import { Bot } from '../bot/entities/bot.entity';
+import { Guild } from 'src/guild/entities/guild.entity';
+import { Channel } from 'src/channel/entities/channel.entity';
+import { Member } from '../member/entities/member.entity';
+import { DiscordMember } from '../member/entities/member.discord';
+import { MessageFetchingOptions } from './types/message.fetching.options.type';
+import { DiscordMessage } from '../message/entities/message.discord';
 
 
 @Injectable({ scope: Scope.REQUEST })
@@ -48,105 +54,106 @@ export class DiscordClientService {
     return this.get('/users/@me');
   }
 
-  // /**
-  //  * Fetch all guilds of Bot with specified token
-  //  */
-  // async fetchGuilds(): Promise<AxiosResponse<Guild[]>> {
-  //   return this.get('/users/@me/guilds');
-  // }
-  //
-  // /**
-  //  *
-  //  * @param guildId Guild identifier
-  //  */
-  // async fetchGuild(guildId: string): Promise<AxiosResponse<Guild>> {
-  //   return this.get(`/guilds/${guildId}`);
-  // }
-  //
-  // /**
-  //  * Fetch all channels from specified Guild
-  //  * @param guildId Guild identifier
-  //  */
-  // async fetchChannels(guildId: string): Promise<AxiosResponse<Channel[]>> {
-  //   return this.get(`/guilds/${guildId}/channels`);
-  // }
-  //
-  // /**
-  //  * Fetch all active threads from Guild
-  //  * @param guildId Guild id
-  //  */
-  // async fetchActiveThreads(guildId: string): Promise<AxiosResponse<Channel[]>> {
-  //   return this.get(`/guilds/${guildId}/threads/active`)
-  // }
-  //
-  // /**
-  //  * Fetch channel with specified ID
-  //  * @param channelId Channel identifier
-  //  */
-  // async fetchChannel(channelId: string): Promise<AxiosResponse<Channel>> {
-  //   return this.get(`/channels/${channelId}`);
-  // }
-  //
-  // /**
-  //  * Fetch all members from specified Guild
-  //  * @param guildId Guild id
-  //  */
-  // async fetchMembers(guildId: string): Promise<AxiosResponse<Member[]>> {
-  //   return this.get(`/guilds/${guildId}/members`);
-  // }
-  //
-  // /**
-  //  * Fetch member from specified Guild
-  //  * @param guildId Guild id
-  //  * @param memberId Member id
-  //  */
-  // async fetchMember(
-  //   guildId: string,
-  //   memberId: string,
-  // ): Promise<AxiosResponse<Member>> {
-  //   return this.get(`/guilds/${guildId}/members/${memberId}`);
-  // }
-  //
-  // /**
-  //  * Fetch messages from specified channel
-  //  * @param channelId Channel identifier
-  //  * @param options Options for query params
-  //  */
-  // async fetchMessages(
-  //   channelId: string,
-  //   options: MessageFetchingOptions,
-  // ): Promise<AxiosResponse<Message[]>> {
-  //   const queryOptions = this.parseMessageFetchingOptions(options);
-  //   const queryString = queryOptions.toString()
-  //     ? `?${queryOptions.toString()}`
-  //     : '';
-  //   return this.get(`/channels/${channelId}/messages${queryString}`);
-  // }
-  //
-  // /**
-  //  * Fetch specified message
-  //  * @param channelId Channel id
-  //  * @param messageId Message id
-  //  */
-  // async fetchMessage(
-  //   channelId: string,
-  //   messageId: string,
-  // ): Promise<AxiosResponse<Message>> {
-  //   return this.get(`/channels/${channelId}/messages/${messageId}`);
-  // }
-  //
-  // private parseMessageFetchingOptions(
-  //   options: MessageFetchingOptions,
-  // ): URLSearchParams {
-  //   const queryOptions = new URLSearchParams();
-  //   if (options.limit !== undefined)
-  //     queryOptions.append('limit', options.limit.toString());
-  //   if (options.after !== undefined)
-  //     queryOptions.append('after', options.after);
-  //   if (options.before !== undefined)
-  //     queryOptions.append('before', options.before);
-  //   if (options.around !== undefined)
-  //     queryOptions.append('around', options.around);
-  //   return queryOptions;
-  // }
+  /**
+   * Fetch all guilds of Bot with specified token
+   */
+  async fetchGuilds(): Promise<AxiosResponse<Guild[]>> {
+    return this.get('/users/@me/guilds');
+  }
+  
+  /**
+   *
+   * @param guildId Guild identifier
+   */
+  async fetchGuild(guildId: string): Promise<AxiosResponse<Guild>> {
+    return this.get(`/guilds/${guildId}`);
+  }
+  
+  /**
+   * Fetch all channels from specified Guild
+   * @param guildId Guild identifier
+   */
+  async fetchChannels(guildId: string): Promise<AxiosResponse<Channel[]>> {
+    return this.get(`/guilds/${guildId}/channels`);
+  }
+  
+  /**
+   * Fetch all active threads from Guild
+   * @param guildId Guild id
+   */
+  async fetchActiveThreads(guildId: string): Promise<AxiosResponse<Channel[]>> {
+    return this.get(`/guilds/${guildId}/threads/active`)
+  }
+  
+  /**
+   * Fetch channel with specified ID
+   * @param channelId Channel identifier
+   */
+  async fetchChannel(channelId: string): Promise<AxiosResponse<Channel>> {
+    return this.get(`/channels/${channelId}`);
+  }
+  
+  /**
+   * Fetch all members from specified Guild
+   * @param guildId Guild id
+   */
+  async fetchMembers(guildId: string): Promise<AxiosResponse<DiscordMember[]>> {
+    return this.get(`/guilds/${guildId}/members`);
+  }
+
+  /**
+   * Fetch member from specified Guild
+   * @param guildId Guild id
+   * @param memberId Member id
+   */
+  async fetchMember(
+    guildId: string,
+    memberId: string,
+  ): Promise<AxiosResponse<DiscordMember>>
+  {
+    return this.get(`/guilds/${guildId}/members/${memberId}`);
+  }
+
+  /**
+   * Fetch messages from specified channel
+   * @param channelId Channel identifier
+   * @param options Options for query params
+   */
+  async fetchMessages(
+    channelId: string,
+    options: MessageFetchingOptions,
+  ): Promise<AxiosResponse<DiscordMessage[]>> {
+    const queryOptions = this.parseMessageFetchingOptions(options);
+    const queryString = queryOptions.toString()
+      ? `?${queryOptions.toString()}`
+      : '';
+    return this.get(`/channels/${channelId}/messages${queryString}`);
+  }
+
+  /**
+   * Fetch specified message
+   * @param channelId Channel id
+   * @param messageId Message id
+   */
+  async fetchMessage(
+    channelId: string,
+    messageId: string,
+  ): Promise<AxiosResponse<DiscordMessage>> {
+    return this.get(`/channels/${channelId}/messages/${messageId}`);
+  }
+
+  private parseMessageFetchingOptions(
+    options: MessageFetchingOptions,
+  ): URLSearchParams {
+    const queryOptions = new URLSearchParams();
+    if (options.limit !== undefined)
+      queryOptions.append('limit', options.limit.toString());
+    if (options.after !== undefined)
+      queryOptions.append('after', options.after);
+    if (options.before !== undefined)
+      queryOptions.append('before', options.before);
+    if (options.around !== undefined)
+      queryOptions.append('around', options.around);
+    return queryOptions;
+  }
 }

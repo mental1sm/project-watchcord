@@ -1,9 +1,11 @@
+import { Guild } from "src/guild/entities/guild.entity";
+
 export class Bot {
   id: string;
   token: string;
   username: string;
   avatar: string;
-  guildsId: string[];
+  guilds: Guild[];
 
   static extractToBot(obj: object) {
     const bot = new Bot();
@@ -11,7 +13,7 @@ export class Bot {
     bot.token = obj['token'];
     bot.username = obj['username'];
     bot.avatar = obj['avatar'];
-    bot.guildsId = [];
+    bot.guilds = [];
     return bot;
   }
 }

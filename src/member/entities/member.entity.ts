@@ -1,23 +1,16 @@
-// import { Guild } from 'src/guild/entities/guild.entity';
-// import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
-// import { User } from '../../user/entities/user.entity';
-//
-// @Entity()
-// export class Member {
-//   @PrimaryColumn({ name: 'userId', type: 'text' })
-//   userId: string;
-//   @PrimaryColumn({ name: 'guildId', type: 'text' })
-//   guildId: string;
-//   @Column({ name: 'nick', type: 'text', nullable: true })
-//   nick: string;
-//   @Column({ name: 'joined_at', type: 'text', nullable: true })
-//   joined_at: string;
-//
-//   @ManyToOne(() => User, (user) => user.membership, { eager: true })
-//   @JoinColumn({ name: 'userId' })
-//   user: User;
-//
-//   @ManyToOne(() => Guild, (guild) => guild.members)
-//   @JoinColumn({ name: 'guildId' })
-//   guild: Guild;
-// }
+import { OmitType } from '@nestjs/mapped-types';
+import { DiscordMember } from './member.discord';
+
+export class Member extends OmitType(DiscordMember, ['user'] as const){
+  userId: string;
+
+  static discordMemberToMember(discordMember: DiscordMember) {
+    const member = new Member();
+    member.nick = discordMember.nick;
+    member.joined_at = discordMember.joined_at;
+    member.userId = discordMember.user.id;
+
+    return member;
+  }
+
+}
