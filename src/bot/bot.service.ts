@@ -1,15 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateBotDto } from './dto/create-bot.dto';
 import { UpdateBotDto } from './dto/update-bot.dto';
-import { InjectRepository } from '@nestjs/typeorm';
 import { Bot } from './entities/bot.entity';
-import { Repository, UpdateResult } from 'typeorm';
 import { DiscordClientService } from '../discord_client/discord.client.service';
+import { BotRepository } from '../infrastructure/bot.repository';
 
 @Injectable()
 export class BotService {
   constructor(
-    @InjectRepository(Bot) private readonly repository: Repository<Bot>,
+    @Inject() private readonly repository: BotRepository,
     private readonly discordClient: DiscordClientService,
   ) {}
 
@@ -18,25 +17,29 @@ export class BotService {
    * @param createBotDto bundled token and app ID
    * @returns Fetched bot info if it exists
    */
-  async add(createBotDto: CreateBotDto): Promise<Bot> {
-    const b = new Bot();
+  async add(createBotDto: CreateBotDto): Promise<void> {
+    const b: Bot = new Bot();
     b.token = createBotDto.token;
     this.discordClient.setBot(b);
 
     const fetchedBot = (await this.discordClient.fetchBot()).data;
-    const bot = this.repository.create(fetchedBot);
-    bot.token = createBotDto.token;
-
-    return this.repository.save(bot);
+    fetchedBot.token = createBotDto.token;
+    return this.repository.create(Bot.extractToBot(fetchedBot));
   }
 
   /**
-   * Saves Bot at database
-   * @param bot
+   * Updates Bot at database
+   * @param appId Bot id
+   * @param updateData Update dto
    * @returns Bot object with updated info
    */
-  save(bot: Bot): Promise<Bot> {
-    return this.repository.save(bot);
+  async update(appId: string, updateData: UpdateBotDto): Promise<void> {
+    const bot = await this.repository.findOne(appId);
+    if (bot) {
+      bot.token = updateData.token;
+      return this.repository.update(bot);
+    }
+    throw new NotFoundException();
   }
 
   /**
@@ -44,7 +47,7 @@ export class BotService {
    * @returns Array of Bot objects
    */
   findAll(): Promise<Bot[]> {
-    return this.repository.find();
+    return this.repository.findAll();
   }
 
   /**
@@ -53,17 +56,7 @@ export class BotService {
    * @returns Bot object
    */
   findOne(appId: string): Promise<Bot> {
-    return this.repository.findOne({ where: { id: appId } });
-  }
-
-  /**
-   *
-   * @param appId Application ID of Bot
-   * @param updateBotDto Updation data
-   * @returns Update result
-   */
-  update(appId: string, updateBotDto: UpdateBotDto): Promise<UpdateResult> {
-    return this.repository.update(appId, updateBotDto);
+    return this.repository.findOne(appId);
   }
 
   /**
@@ -72,8 +65,7 @@ export class BotService {
    * @returns Bot object
    */
   async remove(appId: string) {
-    const bot = await this.repository.findOne({ where: { id: appId } });
-    return this.repository.remove(bot);
+    return this.repository.remove(appId);
   }
 
   /**
@@ -81,7 +73,6 @@ export class BotService {
    * @param botId Bot id
    */
   async countGuildsForBot(botId: string): Promise<number> {
-    const bot = await this.repository.findOne({ where: { id: botId }, relations: ['guilds'] });
-    return bot ? (await bot.guilds).length : 0;
+    return 0;
   }
 }

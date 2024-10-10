@@ -6,11 +6,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { DiscordClientModule } from '../discord_client/discord.client.module';
 import { BotContextInterceptor } from './bot.interceptor';
 import { BotContextMiddleware } from './bot.middleware';
+import { BotRepository } from '../infrastructure/bot.repository';
+import { InfrastructureModule } from '../infrastructure/infrastructure.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Bot]), DiscordClientModule],
+  imports: [DiscordClientModule, InfrastructureModule.register("main")],
   exports: [BotService, BotContextMiddleware],
   controllers: [BotController],
-  providers: [BotService, BotContextMiddleware],
+  providers: [BotService, BotContextMiddleware, BotRepository],
 })
 export class BotModule {}
