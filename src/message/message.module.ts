@@ -6,6 +6,7 @@ import { DiscordClientModule } from '../discord_client/discord.client.module';
 import { BotContextMiddleware } from '../bot/bot.middleware';
 import { InfrastructureModule } from '../infrastructure/infrastructure.module';
 import { MessageRepository } from '../infrastructure/message.repository';
+import { UserRepository } from '../infrastructure/user.repository';
 
 @Module({
   imports: [
@@ -14,7 +15,7 @@ import { MessageRepository } from '../infrastructure/message.repository';
     DiscordClientModule
   ],
   controllers: [MessageController],
-  providers: [MessageService, MessageRepository],
+  providers: [MessageService, MessageRepository, UserRepository],
 })
 export class MessageModule {
   configure(consumer: MiddlewareConsumer) {

@@ -35,14 +35,12 @@ export class MessageRepository {
 
     const userSnapshot = await this.acebase.ref<User>(`/user`).query().filter('id', 'in', authorIds).get();
     const users: User[] = Object.values(userSnapshot.getValues());
-    const data = messages.map(msg => {
+    return messages.map(msg => {
       const author = users.find(usr => usr.id === msg.authorId);
       return {
         ...msg,
         author: author
       }
-    })
-    console.log(data);
-    return data;
+    });
   }
 }

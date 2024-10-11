@@ -3,11 +3,15 @@ import { Message } from './entities/message.entity';
 import { DiscordClientService } from '../discord_client/discord.client.service';
 import { MessageFetchingOptions } from '../discord_client/types/message.fetching.options.type';
 import { MessageRepository } from '../infrastructure/message.repository';
+import { Member } from '../member/entities/member.entity';
+import { UserRepository } from '../infrastructure/user.repository';
+import { User } from '../user/entities/user.entity';
 
 @Injectable()
 export class MessageService {
   constructor(
     @Inject() private readonly repository: MessageRepository,
+    @Inject() private readonly userRepository: UserRepository,
     private readonly discordClient: DiscordClientService,
   ) {}
 
@@ -26,6 +30,8 @@ export class MessageService {
 
   /**
    * Fetch all messages from Discord API in specified channel
+   * @param appId Bot id
+   * @param guildId Guild id
    * @param channelId channelId
    * @param options Query options
    */
@@ -36,6 +42,12 @@ export class MessageService {
     options: MessageFetchingOptions,
   ): Promise<Message[]> {
     const discordMessages = (await this.discordClient.fetchMessages(channelId, options)).data;
+
+    const uniqueUsers: Set<User> = new Set<User>();
+    discordMessages.forEach(member => {
+      uniqueUsers.add(member.author)
+    })
+    await this.userRepository.add(Array.from(uniqueUsers));
 
     const messages = discordMessages.map(msg => Message.discordMessageToMessage(msg));
 
@@ -50,13 +62,14 @@ export class MessageService {
    * @param channelId Channel id
    * @param options Query options
    */
-  findAll(
+  async findAll(
     appId: string,
     guildId: string,
     channelId: string,
     options: MessageFetchingOptions,
   ): Promise<Message[]> {
-    return this.repository.getMany(options, appId, guildId, channelId);
+    const messages = await this.repository.getMany(options, appId, guildId, channelId);
+    return messages.reverse();
   }
 
   // /**

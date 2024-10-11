@@ -22,9 +22,8 @@ export class MemberService {
    */
   async fetchAll(appId: string, guildId: string): Promise<Member[]> {
     const rawMembers = (await this.discordClient.fetchMembers(guildId)).data;
-    const discordMembers = rawMembers.map(raw => DiscordMember.extractToMember(raw));
     const users: User[] = [];
-    const plainMembers = discordMembers.map(member => {
+    const plainMembers = rawMembers.map(member => {
       if (!users.some(u => u.id === member.user.id)) {
         users.push(member.user);
       }
