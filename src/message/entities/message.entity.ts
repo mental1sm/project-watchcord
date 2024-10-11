@@ -1,20 +1,21 @@
-import { OmitType } from '@nestjs/mapped-types';
-import { DiscordMessage } from './message.discord';
+import { AutoMap } from '@automapper/classes';
 import { MessageAttachment } from './message.attachment';
 
-export class Message extends OmitType(DiscordMessage, ['author']){
-  authorId: string;
+export class Message {
+  @AutoMap()
+  id: string;
+  @AutoMap()
+  channel_id: string;
+  @AutoMap()
+  timestamp: string;
+  @AutoMap()
+  type: number;
+  @AutoMap()
+  content: string;
+
+  @AutoMap(() => MessageAttachment)
   attachments: MessageAttachment[];
 
-  static discordMessageToMessage(msg: DiscordMessage) {
-    const message = new Message();
-    message.id = msg.id;
-    message.authorId = msg.author.id;
-    message.type = msg.type;
-    message.content = msg.content;
-    message.timestamp = msg.timestamp;
-    message.channel_id = msg.channel_id;
-    message.attachments = msg.attachments;
-    return message;
-  }
+  @AutoMap()
+  authorId: string;
 }

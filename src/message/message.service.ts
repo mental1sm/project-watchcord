@@ -6,12 +6,17 @@ import { MessageRepository } from '../infrastructure/message.repository';
 import { Member } from '../member/entities/member.entity';
 import { UserRepository } from '../infrastructure/user.repository';
 import { User } from '../user/entities/user.entity';
+import { Mapper } from '@automapper/core';
+import { InjectMapper } from '@automapper/nestjs';
+import { DiscordMessage } from './entities/message.discord';
+import { MessageDto } from './dto/message.dto';
 
 @Injectable()
 export class MessageService {
   constructor(
     @Inject() private readonly repository: MessageRepository,
     @Inject() private readonly userRepository: UserRepository,
+    @InjectMapper() private readonly mapper: Mapper,
     private readonly discordClient: DiscordClientService,
   ) {}
 
@@ -40,7 +45,7 @@ export class MessageService {
     guildId: string,
     channelId: string,
     options: MessageFetchingOptions,
-  ): Promise<Message[]> {
+  ): Promise<MessageDto[]> {
     const discordMessages = (await this.discordClient.fetchMessages(channelId, options)).data;
 
     const uniqueUsers: Set<User> = new Set<User>();
@@ -49,7 +54,7 @@ export class MessageService {
     })
     await this.userRepository.add(Array.from(uniqueUsers));
 
-    const messages = discordMessages.map(msg => Message.discordMessageToMessage(msg));
+    const messages = discordMessages.map(msg => this.mapper.map(msg, DiscordMessage, Message));
 
     await this.repository.addToChannel(appId, guildId, channelId, messages);
     return this.findAll(appId, guildId, channelId, options);
@@ -67,9 +72,18 @@ export class MessageService {
     guildId: string,
     channelId: string,
     options: MessageFetchingOptions,
-  ): Promise<Message[]> {
+  ): Promise<MessageDto[]> {
     const messages = await this.repository.getMany(options, appId, guildId, channelId);
-    return messages.reverse();
+    if (messages.length === 0) return [];
+
+    const authorIds = Array.from(new Set(messages.map(msg => msg.authorId)));
+    const authors = await this.userRepository.getBunch(authorIds);
+    const dtoMessages = messages.map(msg => {
+      const message: MessageDto = this.mapper.map(msg, Message, MessageDto);
+      message.author = authors.find(author => author.id === msg.authorId);
+      return message;
+    });
+    return dtoMessages.reverse();
   }
 
   // /**

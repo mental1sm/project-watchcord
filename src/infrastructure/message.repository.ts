@@ -15,7 +15,7 @@ export class MessageRepository {
       return acc;
     }, {});
 
-    await messageRef.set(updates);
+    await messageRef.update(updates);
   }
 
   async getMany(options: MessageFetchingOptions, botId: string, guildId: string, channelId: string) {
@@ -24,23 +24,13 @@ export class MessageRepository {
     if (options.limit && !options.around) query.take(options.limit);
     if (options.after) query.filter('id', '>', options.after);
     if (options.before) query.filter('id', '<', options.before);
+    query.sort('id', false);
 
     const messagesSnapshot = await query.get();
     const messagesObject = messagesSnapshot.getValues();
 
-    if (!messagesObject || messagesObject.length === 0) return [];
+    if (messagesSnapshot.length === 0) return [] as Message[];
     const messages: Message[] = Object.values(messagesObject);
-
-    const authorIds = Array.from(new Set(messages.map(msg => msg.authorId)));
-
-    const userSnapshot = await this.acebase.ref<User>(`/user`).query().filter('id', 'in', authorIds).get();
-    const users: User[] = Object.values(userSnapshot.getValues());
-    return messages.map(msg => {
-      const author = users.find(usr => usr.id === msg.authorId);
-      return {
-        ...msg,
-        author: author
-      }
-    });
+    return messages;
   }
 }

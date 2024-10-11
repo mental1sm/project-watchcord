@@ -17,4 +17,8 @@ export class UserService {
   findOne(userId: string) {
     return Promise.any([]);
   }
+
+  findAll() {
+    return this.repository.getAll();
+  }
 }

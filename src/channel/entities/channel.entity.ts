@@ -37,6 +37,8 @@ export class Channel {
     channel.last_read_message_id = obj['last_read_message_id'];
     channel.total_message_sent = obj['total_message_sent'];
     channel.parent_id = obj['parent_id'];
+    channel.messages = [];
+
     return channel;
   }
 }

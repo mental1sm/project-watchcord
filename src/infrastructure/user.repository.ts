@@ -13,7 +13,7 @@ export class UserRepository {
       return acc;
     }, {});
 
-    await userRef.set(updates);
+    await userRef.update(updates);
   }
 
   async getOne(userId: string): Promise<User> {
@@ -24,7 +24,13 @@ export class UserRepository {
   }
 
   async getBunch(userIds: string[]): Promise<User[]> {
-    const snapshot = await this.acebase.ref<User[]>('/user').query().filter('id', 'in', userIds).get();
+    if (userIds.length < 2) return ([await this.getOne(userIds[0])])
+    const snapshot = await this.acebase.ref<User>('/user').query().filter('id', 'in', userIds).get();
     return snapshot.getValues();
+  }
+
+  async getAll() {
+    const snapshot = await this.acebase.ref<User>(`/user`).get();
+    return snapshot.val();
   }
 }

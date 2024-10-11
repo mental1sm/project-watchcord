@@ -8,11 +8,16 @@ import { UserModule } from './user/user.module';
 import { MemberModule } from './member/member.module';
 import { MessageModule } from './message/message.module';
 import { ChannelModule } from './channel/channel.module';
+import { AutomapperModule } from '@automapper/nestjs';
+import { classes } from '@automapper/classes';
 
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
+    AutomapperModule.forRoot({
+      strategyInitializer: classes()
+    }),
     BotModule,
     GuildModule,
     MemberModule,

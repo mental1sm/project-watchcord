@@ -56,7 +56,6 @@ export class GuildService {
    */
   async getGuildStatistics(appId: string): Promise<{ guildId: string, channelCount: number, memberCount: number }[]> {
     const guilds = await this.repository.getAllGuilds(appId);
-    console.log(guilds);
       
     return Promise.all(guilds.map(async (guild) => (
         {

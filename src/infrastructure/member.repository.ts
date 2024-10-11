@@ -13,7 +13,7 @@ export class MemberRepository {
       return acc;
     }, {});
 
-    await guildMembersRef.set(updates);
+    await guildMembersRef.update(updates);
   }
 
   async getOne(botId: string, guildId: string, userId) {

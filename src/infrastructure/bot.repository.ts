@@ -11,7 +11,7 @@ export class BotRepository {
   }
 
   async update(bot: Bot) {
-    await this.acebase.ref(`bot/${bot.id}`).set(bot);
+    await this.acebase.ref(`bot/${bot.id}`).update(bot);
   }
 
   async remove(botId: string) {

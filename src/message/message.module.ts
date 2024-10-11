@@ -7,15 +7,18 @@ import { BotContextMiddleware } from '../bot/bot.middleware';
 import { InfrastructureModule } from '../infrastructure/infrastructure.module';
 import { MessageRepository } from '../infrastructure/message.repository';
 import { UserRepository } from '../infrastructure/user.repository';
+import { AutomapperModule } from '@automapper/nestjs';
+import { MessageProfile } from './message.mapper';
 
 @Module({
   imports: [
     InfrastructureModule.register("main"),
     BotModule,
-    DiscordClientModule
+    DiscordClientModule,
+    AutomapperModule
   ],
   controllers: [MessageController],
-  providers: [MessageService, MessageRepository, UserRepository],
+  providers: [MessageService, MessageRepository, UserRepository, MessageProfile],
 })
 export class MessageModule {
   configure(consumer: MiddlewareConsumer) {

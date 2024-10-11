@@ -16,7 +16,7 @@ export class ChannelRepository {
     }
 
     async getAllChannels(botId: string, guildId: string) {
-        const channelsObj = (await this.acebase.ref<Channel[]>(`bot/${botId}/guilds/${guildId}/channels`).get()).val();
+        const channelsObj = (await this.acebase.ref<Channel[]>(`bot/${botId}/guilds/${guildId}/channels`).get({exclude: ['*/messages']})).val();
         if (!channelsObj) return [];
         return Object.values(channelsObj);
     }

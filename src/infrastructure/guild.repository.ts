@@ -13,11 +13,11 @@ export class GuildRepository {
             return acc;
         }, {});
         
-        await guildsRef.set(updates);
+        await guildsRef.update(updates);
     }
 
     async getAllGuilds(botId: string): Promise<Guild[]> {
-        const snapshot = await this.acebase.ref<Guild[]>(`bot/${botId}/guilds`).get();
+        const snapshot = await this.acebase.ref(`bot/${botId}/guilds`).get({exclude: ['*/channels']});
         const guildsObj = snapshot.val();
 
         if (!guildsObj) {

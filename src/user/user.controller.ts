@@ -14,4 +14,9 @@ export class UserController {
   findOne(@Param('id') id: string): Promise<UserDto> {
     return this.userService.findOne(id);
   }
+
+  @Get()
+  findAll() {
+    return this.userService.findAll();
+  }
 }
