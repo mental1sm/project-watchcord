@@ -5,15 +5,21 @@ import { Guild } from 'src/guild/entities/guild.entity';
 @Injectable()
 export class GuildRepository {
     constructor(@Inject("ACEBASE_DB") private readonly acebase: AceBase) {}
-
     async addToBot(botId: string, guilds: Guild[]) {
         const guildsRef = this.acebase.ref(`bot/${botId}/guilds`);
-        const updates = guilds.reduce((acc, guild) => {
-            acc[guild.id] = guild;
-            return acc;
-        }, {});
-        
-        await guildsRef.update(updates);
+
+        for (const guild of guilds) {
+            const guildRef = guildsRef.child(guild.id);
+
+            const existingGuild = (await guildRef.get()).val();
+
+            const updatedGuild = {
+                ...existingGuild,
+                ...guild
+            };
+
+            await guildRef.update(updatedGuild);
+        }
     }
 
     async getAllGuilds(botId: string): Promise<Guild[]> {

@@ -11,7 +11,13 @@ export class BotRepository {
   }
 
   async update(bot: Bot) {
-    await this.acebase.ref(`bot/${bot.id}`).update(bot);
+    const botRef = this.acebase.ref(`bot/${bot.id}`);
+    const existingBot = (await botRef.get()).val();
+    const updatedBot = {
+      ...existingBot,
+      ...bot
+    }
+    await botRef.update(updatedBot);
   }
 
   async remove(botId: string) {
@@ -27,5 +33,10 @@ export class BotRepository {
     const snapshot = await this.acebase.ref<Bot[]>(`bot`).get();
     const bots = snapshot.exists() ? snapshot.val() : {};
     return Object.values(bots)
+  }
+
+  async guildCount(botId: string) {
+    const snapshot = await this.acebase.ref(`bot/${botId}/guilds`).count();
+    return snapshot.valueOf();
   }
 }

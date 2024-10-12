@@ -12,7 +12,7 @@ import { MessageProfile } from './message.mapper';
 
 @Module({
   imports: [
-    InfrastructureModule.register("main"),
+    InfrastructureModule.register("default"),
     BotModule,
     DiscordClientModule,
     AutomapperModule

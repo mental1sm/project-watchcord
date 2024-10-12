@@ -13,8 +13,6 @@ export class Guild {
     guild.id = obj['id'];
     guild.icon = obj['icon'];
     guild.name = obj['name'];
-    guild.members = [];
-    guild.channels = [];
     return guild;
   }
 //   channelsId: string[];

@@ -9,7 +9,7 @@ import { MemberRepository } from '../infrastructure/member.repository';
 
 @Module({
   imports: [
-    InfrastructureModule.register("main"),
+    InfrastructureModule.register("default"),
     DiscordClientModule,
     BotModule
   ],

@@ -10,7 +10,7 @@ import { BotRepository } from '../infrastructure/bot.repository';
 import { InfrastructureModule } from '../infrastructure/infrastructure.module';
 
 @Module({
-  imports: [DiscordClientModule, InfrastructureModule.register("main")],
+  imports: [DiscordClientModule, InfrastructureModule.register("default")],
   exports: [BotService, BotContextMiddleware],
   controllers: [BotController],
   providers: [BotService, BotContextMiddleware, BotRepository],

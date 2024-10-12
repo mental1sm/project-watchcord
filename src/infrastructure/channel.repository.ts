@@ -8,11 +8,16 @@ export class ChannelRepository {
 
     async saveChannels(botId: string, guildId: string, channels: Channel[]) {
         const channelsRef = this.acebase.ref(`bot/${botId}/guilds/${guildId}/channels`);
-        const updates = channels.reduce((acc, channel) => {
-            acc[channel.id] = channel;
-            return acc;
-        }, {});
-        await channelsRef.set(updates);
+        for (const channel of channels) {
+            const existingChannelData = (await channelsRef.child(channel.id).get()).val();
+
+            const updatedChannel = {
+                ...existingChannelData,  // Сохраняем старые данные
+                ...channel               // Обновляем поля
+            };
+
+            await channelsRef.child(channel.id).update(updatedChannel);
+        }
     }
 
     async getAllChannels(botId: string, guildId: string) {

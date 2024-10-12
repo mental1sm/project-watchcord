@@ -73,6 +73,6 @@ export class BotService {
    * @param botId Bot id
    */
   async countGuildsForBot(botId: string): Promise<number> {
-    return 0;
+    return this.repository.guildCount(botId);
   }
 }

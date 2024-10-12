@@ -9,7 +9,7 @@ import { BotRepository } from 'src/infrastructure/bot.repository';
 import { GuildRepository } from 'src/infrastructure/guild.repository';
 
 @Module({
-  imports: [InfrastructureModule.register("main"), DiscordClientModule, BotModule],
+  imports: [InfrastructureModule.register("default"), DiscordClientModule, BotModule],
   exports: [GuildService],
   controllers: [GuildController],
   providers: [GuildService, BotRepository, GuildRepository],

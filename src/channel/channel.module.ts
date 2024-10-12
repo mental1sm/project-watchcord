@@ -9,7 +9,7 @@ import { InfrastructureModule } from 'src/infrastructure/infrastructure.module';
 
 @Module({
   imports: [
-    InfrastructureModule.register("main"),
+    InfrastructureModule.register("default"),
     DiscordClientModule,
     BotModule,
     GuildModule

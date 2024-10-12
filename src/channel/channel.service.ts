@@ -20,6 +20,8 @@ export class ChannelService {
    */
   async fetchAll(appId: string, guildId: string): Promise<Channel[]> {
     const rawChannels = (await this.discordClient.fetchChannels(guildId)).data;
+    const rawThreads = (await this.discordClient.fetchActiveThreads(guildId)).data['threads'];
+    rawThreads.forEach(t => rawChannels.push(t));
     const channels = rawChannels.map(ch => Channel.extractToChannel(ch));
     await this.repository.saveChannels(appId, guildId, channels);
     return this.findAll(appId, guildId);
