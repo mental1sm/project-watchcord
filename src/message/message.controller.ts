@@ -29,7 +29,7 @@ export class MessageController {
     if (fetch === true) {
       if (queryOptions.before) {
         const oldMessages = await this.messageService.findAll(appId, guildId, channelId, queryOptions);
-        return oldMessages.length < 50 ? this.messageService.fetchAll(appId, guildId, channelId, queryOptions) : oldMessages;
+        return oldMessages.length < queryOptions.limit ? this.messageService.fetchAll(appId, guildId, channelId, queryOptions) : oldMessages;
       }
       return this.messageService.fetchAll(appId, guildId, channelId, queryOptions);
     }

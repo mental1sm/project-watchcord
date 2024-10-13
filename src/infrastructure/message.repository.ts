@@ -2,7 +2,6 @@ import { Inject, Injectable } from '@nestjs/common';
 import { AceBase } from 'acebase';
 import { Message } from '../message/entities/message.entity';
 import { MessageFetchingOptions } from '../discord_client/types/message.fetching.options.type';
-import { User } from '../user/entities/user.entity';
 
 @Injectable()
 export class MessageRepository {
