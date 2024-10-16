@@ -44,6 +44,7 @@ export class DiscordClientService {
   private async get<T>(endpoint: string): Promise<AxiosResponse<T>> {
     return this.httpService.axiosRef.get(`${this.baseUrl}${endpoint}`, {
       headers: this.headers,
+      timeout: 3000
     });
   }
 
